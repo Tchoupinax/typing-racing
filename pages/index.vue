@@ -31,7 +31,6 @@
 </template>
 
 <script lang="ts">
-import { setTimeout } from 'timers';
 type State = {
   invalidWrittenText: string;
   startingTime: Date;
