@@ -1,6 +1,6 @@
 export type TextsTable = {
-  id: string;
   content: string;
   created_at: Date;
+  id: string;
   updated_at: Date;
 }
