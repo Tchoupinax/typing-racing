@@ -122,7 +122,7 @@ export default {
         this.writtenText = ""
         this.validWrittenText = ""
       } else if (this.previousText + this.validWrittenText === this.text) {
-        const duration = new Date().getTime() - this.startingTime.getTime();
+        const duration = new Date().getTime() / 1000 - this.startingTime.getTime() / 1000;
         this.finished = true
         window.setTimeout(() => {
           const wpm = this.text.split(' ').length / (duration / 60)
