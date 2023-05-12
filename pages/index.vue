@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col mx-32">
-    <div class="my-16 text-2xl">
+    <div v-if="text.length > 0" class="my-16 text-2xl">
       <span class="text-green-300">
         {{ previousText }}
       </span>
