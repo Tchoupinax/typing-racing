@@ -125,7 +125,15 @@ export default {
         const duration = new Date().getSeconds() - this.startingTime.getSeconds();
         this.finished = true
         window.setTimeout(() => {
-          alert(`Finished in ${duration} seconds!`)
+          const wpm = this.text.split(' ').length / (duration / 60)
+          const nickname = prompt(`Finished in ${duration} seconds (${wpm} wpm)! GG! What is you name?`)
+          $fetch('/api/rankings/new', {
+            method: "POST",
+            body: {
+              nickname,
+              score_wpm: wpm,
+            }
+          })
         }, 1)
       }
     },
