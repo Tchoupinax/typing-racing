@@ -122,17 +122,14 @@ export default {
         this.writtenText = ""
         this.validWrittenText = ""
       } else if (this.previousText + this.validWrittenText === this.text) {
-        const duration = new Date().getTime() / 1000 - this.startingTime.getTime() / 1000;
+        const duration = Math.floor(new Date().getTime() / 1000 - this.startingTime.getTime() / 1000);
         this.finished = true
         window.setTimeout(() => {
-          const wpm = this.text.split(' ').length / (duration / 60)
+          const wpm = Math.floor(this.text.split(' ').length / (duration / 60))
           const nickname = prompt(`Finished in ${duration} seconds (${wpm} wpm)! GG! What is you name?`)
           $fetch('/api/rankings/new', {
             method: "POST",
-            body: {
-              nickname,
-              score_wpm: wpm,
-            }
+            body: { nickname, score_wpm: wpm }
           })
         }, 1)
       }
