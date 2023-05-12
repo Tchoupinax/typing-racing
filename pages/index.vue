@@ -1,11 +1,14 @@
 <template>
   <div class="flex flex-col mx-32">
-    <div v-if="text.length > 0" class="my-16 text-2xl">
-      <span class="text-green-300">
+    <div
+      v-if="text.length > 0"
+      class="p-4 my-16 text-2xl rounded-lg xl:text-3xl bg-blue-50"
+    >
+      <span class="text-green-500">
         {{ previousText }}
       </span>
       <span class="underline">
-        <span class="m-0 text-green-300">{{ currentWordTypedPart }}</span>{{ currentWord.replace(currentWordTypedPart, "") }}
+        <span class="m-0 text-green-500">{{ currentWordTypedPart }}</span>{{ currentWord.replace(currentWordTypedPart, "") }}
       </span>
       {{ followingText }} 
     </div>
@@ -13,15 +16,22 @@
     <input
       @keyup="keyTyped"
       v-model="writtenText"
-      class="p-2 border-4 rounded-md"
+      class="p-2 text-xl border-4 rounded-md !outline-none"
       :class="{
         'border-red-600 border-4': invalidWrittenText !== ''
       }"
     />
+
+    <div class="relative w-full h-6 mt-4 overflow-hidden rounded-full">
+      <div class="absolute w-full h-full bg-gray-200"></div>
+      <div id="bar" class="relative w-0 h-full bg-green-500"></div>
+      <div class="absolute top-0 left-0 z-50 flex justify-center w-full mx-auto font-bold">{{ progressionPercentage }}%</div>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
+import { setTimeout } from 'timers';
 type State = {
   invalidWrittenText: string;
   startingTime: Date;
@@ -29,6 +39,8 @@ type State = {
   validWrittenText: string;
   wordIndexPassed: number;
   writtenText: string;
+  finished: boolean;
+  progressionPercentage: number;
 }
 
 export default {
@@ -40,6 +52,8 @@ export default {
       validWrittenText: "",
       wordIndexPassed: 0,
       writtenText: "",
+      finished: false,
+      progressionPercentage: 0,
     }
   },
   computed: {
@@ -80,13 +94,17 @@ export default {
       }
       
       return this.text.replace(this.currentWord, '');
-    }
+    },
   },
   mounted() {
     this.fetchText();
   },
   methods: {
     keyTyped($e) {
+      if (this.finished) {
+        return;
+      }
+
       if (!this.currentWord.includes($e.target.value.trim())) {
         this.invalidWrittenText = this.invalidWrittenText + $e.target.value.slice(-1)
         return
@@ -95,6 +113,10 @@ export default {
       this.invalidWrittenText = ""
       this.validWrittenText = this.writtenText
 
+      const percentage = Math.floor((this.previousText.length + this.currentWordTypedPart.length)/ this.text.length * 100);
+      this.progressionPercentage = percentage;
+      document.getElementById('bar')!.style.width = percentage + "%";
+
       if (`${this.currentWord} ` === $e.target.value) {
         this.wordIndexPassed++;
 
@@ -102,12 +124,15 @@ export default {
         this.validWrittenText = ""
       } else if (this.previousText + this.validWrittenText === this.text) {
         const duration = new Date().getSeconds() - this.startingTime.getSeconds();
-        alert(`Finished in ${duration} seconds!`)
+        this.finished = true
+        window.setTimeout(() => {
+          alert(`Finished in ${duration} seconds!`)
+        }, 1)
       }
     },
     async fetchText() {
       const data = await $fetch('/api/texts/random')
-      this.text = data.text;
+      this.text = data.text
     }
   }
 }
