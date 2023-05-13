@@ -101,7 +101,9 @@ export default {
   },
   methods: {
     keyTyped($e) {
-      if (this.finished) { return; }
+      if (this.finished) {
+        return;
+      }
 
       if (!this.currentWord.includes($e.target.value.trim())) {
         this.invalidWrittenText = this.invalidWrittenText + $e.target.value.slice(-1)
@@ -111,10 +113,15 @@ export default {
       this.invalidWrittenText = ""
       this.validWrittenText = this.writtenText
 
-      if ($e.target.value.includes(`${this.currentWord} `)) {
+      const percentage = Math.floor((this.previousText.length + this.currentWordTypedPart.length)/ this.text.length * 100);
+      this.progressionPercentage = percentage;
+      document.getElementById('bar')!.style.width = percentage + "%";
+
+      if (`${this.currentWord} ` === $e.target.value) {
+        this.wordIndexPassed++;
+
         this.writtenText = ""
         this.validWrittenText = ""
-        this.wordIndexPassed++;
       } else if (this.previousText + this.validWrittenText === this.text) {
         const duration = Math.floor(new Date().getTime() / 1000 - this.startingTime.getTime() / 1000);
         this.finished = true
@@ -127,10 +134,6 @@ export default {
           })
         }, 1)
       }
-
-      const percentage = Math.floor((this.previousText.length + this.currentWordTypedPart.length)/ this.text.length * 100);
-      this.progressionPercentage = percentage;
-      document.getElementById('bar')!.style.width = percentage + "%";
     },
     async fetchText() {
       const data = await $fetch('/api/texts/random')
