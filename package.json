@@ -1,5 +1,17 @@
 {
-  "name": "nuxt-app",
+  "name": "typing-racing",
+  "version": "1.0.0",
+  "description": "Open source clone of https://play.typeracer.com",
+  "author": "Tchoupinax <corentinfiloche@hotmail.fr> (https://corentinfiloche.xyz)",
+  "homepage": "https://typing-racing.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Tchoupinax/typing-racing"
+  },
+  "bugs": {
+    "url": "https://github.com/Tchoupinax/typing-racing/issues"
+  },
+  "licence": "MIT",
   "private": true,
   "scripts": {
     "build": "nuxt build",
@@ -9,12 +21,13 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@vercel/postgres-kysely": "^0.3.0",
-    "kysely": "^0.24.2"
+    "@vercel/postgres-kysely": "0.3.0",
+    "kysely": "0.24.2",
+    "ts-pattern": "4.3.0"
   },
   "devDependencies": {
-    "@nuxtjs/tailwindcss": "6.6.6",
-    "@types/node": "18",
+    "@nuxtjs/tailwindcss": "6.6.8",
+    "@types/node": "20",
     "nuxt": "3.4.3"
   }
 }
