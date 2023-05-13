@@ -13,10 +13,13 @@ export default defineEventHandler(async (event) => {
     .otherwise(() => computeFakeResponse())
 })
 
-async function computeReponse(language: string) {
+async function computeReponse(language: string): Promise<{ text: string}> {
   const query = sql`SELECT content FROM texts WHERE language=${language} ORDER BY RANDOM() LIMIT 1;`.compile(db)
   const { rows } = await db.executeQuery(query) as { rows: Array<{ content: string }> }
 
+  if (rows.length === 0) {
+    return computeReponse("EN");
+  }
   return {
     text: rows[0].content as string,
   }
