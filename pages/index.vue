@@ -1,8 +1,8 @@
 <template>
-  <div class="flex flex-col mx-32">
+  <div class="flex flex-col items-center mx-32">
     <div
       v-if="text.length > 0"
-      class="p-4 my-16 text-2xl rounded-lg xl:text-3xl bg-blue-50"
+      class="w-full p-4 my-16 text-2xl rounded-lg xl:w-2/3 bg-blue-50"
     >
       <span class="text-green-500">
         {{ previousText }}
@@ -13,19 +13,28 @@
       {{ followingText }} 
     </div>
 
-    <input
-      @keyup="keyTyped"
-      v-model="writtenText"
-      class="p-2 text-xl border-4 rounded-md !outline-none"
-      :class="{
-        'border-red-600 border-4': invalidWrittenText !== ''
-      }"
-    />
+    <div
+      v-else
+      class="w-full p-4 my-16 text-2xl italic rounded-lg xl:w-2/3 bg-blue-50"
+    >
+      Text is loading ...
+    </div>
 
-    <div class="relative w-full h-6 mt-4 overflow-hidden rounded-full">
-      <div class="absolute w-full h-full bg-gray-200"></div>
-      <div id="bar" class="relative w-0 h-full bg-green-500"></div>
-      <div class="absolute top-0 left-0 z-50 flex justify-center w-full mx-auto font-bold">{{ progressionPercentage }}%</div>
+    <div v-if="text.length > 0" class="flex flex-col items-center justify-center w-full">
+      <input
+        @keyup="keyTyped"
+        v-model="writtenText"
+        class="p-2 text-xl xl:w-1/2 w-full border-4 rounded-md !outline-none"
+        :class="{
+          'border-red-600 border-4': invalidWrittenText !== ''
+        }"
+      />
+
+      <div class="relative w-full h-6 mt-4 overflow-hidden rounded-full xl:w-1/2">
+        <div class="absolute w-full h-full bg-gray-200"></div>
+        <div id="bar" class="relative w-0 h-full bg-green-500"></div>
+        <div class="absolute top-0 left-0 z-50 flex justify-center w-full mx-auto font-bold">{{ progressionPercentage }}%</div>
+      </div>
     </div>
   </div>
 </template>
@@ -67,17 +76,9 @@ export default {
       return this.validWrittenText;
     },
     currentWordStayingPart() {
-      if (this.text.length === 0) {
-        return ""
-      }
-      
       return this.currentWord.replace(this.currentWordTypedPart, "");
     },
     currentWord() {
-      if (this.text.length === 0) {
-        return ""
-      }
-      
       return this.text.split(' ')[this.wordIndexPassed];
     },
     followingText() {
