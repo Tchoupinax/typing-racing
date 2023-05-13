@@ -6,19 +6,27 @@ import { match } from 'ts-pattern';
  
 const db = createKysely<Database>();
 
-export default defineEventHandler(async () => {
+export default defineEventHandler(async (event) => {
+  const language = event.context.params?.language ?? "english";
   return match(process.env.NODE_ENV)
-    .with('production', () => computeReponse())
+    .with('production', () => computeReponse(mapLanguage(language)))
     .otherwise(() => computeFakeResponse())
 })
 
-async function computeReponse() {
-  const query = sql`SELECT content FROM texts ORDER BY RANDOM() LIMIT 1;`.compile(db)
+async function computeReponse(language: string) {
+  const query = sql`SELECT content FROM texts WHERE language=${language} ORDER BY RANDOM() LIMIT 1;`.compile(db)
   const { rows } = await db.executeQuery(query) as { rows: Array<{ content: string }> }
-  
+
   return {
     text: rows[0].content as string,
   }
+}
+
+function mapLanguage(language: string): string {
+  return match(language)
+  .with("english", () => "EN")
+  .with("typescript", () => "TYPESCRIPT")
+  .otherwise(() => "EN");
 }
 
 function computeFakeResponse() {
