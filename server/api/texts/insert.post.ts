@@ -2,7 +2,13 @@ import { defineEventHandler, readRawBody } from 'h3'
 import { createKysely } from '@vercel/postgres-kysely';
 import { Database } from '../../types/database';
 import { randomUUID } from 'crypto';
+import { match } from 'ts-pattern';
+import { checkAdminAllowance } from '../../middlewares/admin-check'
  
+type Body = {
+  text: string;
+}
+
 const db = createKysely<Database>();
 
 export default defineEventHandler(async (request) => {
@@ -16,19 +22,40 @@ export default defineEventHandler(async (request) => {
     return "FALSE";
   }
 
-  const row = await db
+
+  return checkAdminAllowance(
+    request,
+    () => match(process.env.NODE_ENV)
+      .with('production', () => computeReponse(data))
+      .otherwise(() => computeFakeResponse(data))
+  );
+})
+
+async function computeReponse(data: Body) {
+  await db
     .insertInto('texts')
     .values({
       id: randomUUID(),
       content: data.text,
       created_at: new Date(),
       updated_at: new Date(),
+      complexity: 'MEDIUM',
+      language: 'EN'
     })
-    .returning(['id', 'content'])
     .executeTakeFirst()
   
-  return {
-    id: row?.id,
-    text: row?.content
-  }
-})
+  return 'OK'
+}
+
+function computeFakeResponse(data: Body) {
+  console.log('inserted text');
+  console.log({
+    id: randomUUID(),
+    content: data.text,
+    created_at: new Date(),
+    updated_at: new Date(),
+    complexity: 'MEDIUM',
+    language: 'EN'
+  })
+  return 'OK'
+}

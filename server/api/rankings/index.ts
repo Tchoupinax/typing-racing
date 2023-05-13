@@ -19,7 +19,7 @@ async function computeReponse() {
   .orderBy('score_wpm', 'desc')
   .execute();
 
-return rows
+  return rows
 }
 
 function computeFakeResponse() {
