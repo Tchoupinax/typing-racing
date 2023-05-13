@@ -6,6 +6,8 @@ import { match } from 'ts-pattern';
 import { checkAdminAllowance } from '../../middlewares/admin-check'
  
 type Body = {
+  complexity: "SMALL" | "MEDIUM" | "HIGH";
+  language: "FR" | "EN";
   text: string;
 }
 
@@ -18,7 +20,7 @@ export default defineEventHandler(async (request) => {
   }
 
   const data = JSON.parse(body);
-  if (!data.text) {
+  if (!data.text || !data.complexity || !data.language) {
     return "FALSE";
   }
 
@@ -39,8 +41,8 @@ async function computeReponse(data: Body) {
       content: data.text,
       created_at: new Date(),
       updated_at: new Date(),
-      complexity: 'MEDIUM',
-      language: 'EN'
+      complexity: data.complexity,
+      language: data.language
     })
     .executeTakeFirst()
   
@@ -54,8 +56,8 @@ function computeFakeResponse(data: Body) {
     content: data.text,
     created_at: new Date(),
     updated_at: new Date(),
-    complexity: 'MEDIUM',
-    language: 'EN'
+    complexity: data.complexity,
+    language: data.language
   })
   return 'OK'
 }
