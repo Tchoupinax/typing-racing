@@ -48,6 +48,7 @@ type State = {
   wordIndexPassed: number;
   writtenText: string;
   finished: boolean;
+  started: boolean;
   progressionPercentage: number;
 }
 
@@ -61,6 +62,7 @@ export default {
       wordIndexPassed: 0,
       writtenText: "",
       finished: false,
+      started: false,
       progressionPercentage: 0,
     }
   },
@@ -101,6 +103,10 @@ export default {
   },
   methods: {
     keyTyped($e) {
+      if (!this.started) {
+        this.started = true;
+        this.startingTime = new Date();
+      }
       if (this.finished) {
         return;
       }
