@@ -15,7 +15,7 @@ async function computeReponse() {
   const rows = await db
   .selectFrom('scores')
   .select(["nickname", "score_wpm"])
-  .limit(10)
+  .limit(20)
   .orderBy('score_wpm', 'desc')
   .execute();
 

@@ -133,7 +133,11 @@ export default {
         this.finished = true
         window.setTimeout(() => {
           const wpm = Math.floor(this.text.split(' ').length / (duration / 60))
-          const nickname = prompt(`Finished in ${duration} seconds (${wpm} wpm)! GG! What is you name?`)
+          let nickname = prompt(`Finished in ${duration} seconds (${wpm} wpm)! GG! What is you name?`)
+          while(nickname == null || nickname.length === 0) {
+            nickname = prompt(`Finished in ${duration} seconds (${wpm} wpm)! GG! What is you name?`)
+          }
+
           $fetch('/api/rankings/new', {
             method: "POST",
             body: { nickname, score_wpm: wpm }
