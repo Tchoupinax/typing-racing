@@ -4,5 +4,5 @@ export type TextsTable = {
   id: string;
   updated_at: Date;
   complexity: "SMALL" | "MEDIUM" | "HIGH"
-  language: "EN" | "FR"
+  language: "EN" | "FR" | "TYPESCRIPT"
 }

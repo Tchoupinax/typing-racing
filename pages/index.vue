@@ -1,5 +1,12 @@
 <template>
   <div class="flex flex-col items-center mx-32">
+    <select
+      v-model="language"
+      @change="languageChange"
+    >
+      <option>english</option>
+      <option>typescript</option>
+    </select>
     <div
       v-if="text.length > 0"
       class="w-full p-4 my-16 text-2xl rounded-lg xl:w-2/3 bg-blue-50"
@@ -40,6 +47,9 @@
 </template>
 
 <script lang="ts">
+
+type Language = "english" | "typescript";
+
 type State = {
   invalidWrittenText: string;
   startingTime: Date;
@@ -50,6 +60,7 @@ type State = {
   finished: boolean;
   started: boolean;
   progressionPercentage: number;
+  language: Language;
 }
 
 export default {
@@ -64,6 +75,7 @@ export default {
       finished: false,
       started: false,
       progressionPercentage: 0,
+      language: "english",
     }
   },
   computed: {
@@ -102,17 +114,23 @@ export default {
     this.fetchText();
   },
   methods: {
-    keyTyped($e) {
+    languageChange() {
+      this.text = "";
+      this.fetchText();
+    },
+    keyTyped($e: KeyboardEvent) {
       if (!this.started) {
         this.started = true;
         this.startingTime = new Date();
       }
-      if (this.finished) {
+      if (this.finished || !$e.target) {
         return;
       }
 
-      if (!this.currentWord.includes($e.target.value.trim())) {
-        this.invalidWrittenText = this.invalidWrittenText + $e.target.value.slice(-1)
+      const target = $e.target as HTMLInputElement;
+
+      if (!this.currentWord.includes(target.value.trim())) {
+        this.invalidWrittenText = this.invalidWrittenText + target.value.slice(-1)
         return
       }
    
@@ -123,7 +141,7 @@ export default {
       this.progressionPercentage = percentage;
       document.getElementById('bar')!.style.width = percentage + "%";
 
-      if (`${this.currentWord} ` === $e.target.value) {
+      if (`${this.currentWord} ` === target.value) {
         this.wordIndexPassed++;
 
         this.writtenText = ""
@@ -146,7 +164,7 @@ export default {
       }
     },
     async fetchText() {
-      const data = await $fetch('/api/texts/random')
+      const data = await $fetch(`/api/texts/random?language=${this.language ?? "english"}`)
       this.text = data.text
     }
   }
