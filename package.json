@@ -15,10 +15,11 @@
   "private": true,
   "scripts": {
     "build": "nuxt build",
-    "dev": "nuxt dev",
+    "watch": "docker compose up -d && POSTGRES_URL_NON_POOLING=\"postgres://postgres:postgres@127.0.0.1:5432/postgres?sslmode=disable\" nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "migrate": "node scripts/migrate-db.mjs"
   },
   "dependencies": {
     "@vercel/postgres-kysely": "0.3.0",

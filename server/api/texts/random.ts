@@ -2,14 +2,11 @@ import { defineEventHandler } from 'h3'
 import { createKysely } from '@vercel/postgres-kysely';
 import { Database } from '../../types/database';
 import { sql } from 'kysely';
-import { match } from 'ts-pattern';
  
 const db = createKysely<Database>();
 
 export default defineEventHandler(async () => {
-  return match(process.env.NODE_ENV)
-    .with('production', () => computeReponse())
-    .otherwise(() => computeFakeResponse())
+  return computeReponse();
 })
 
 async function computeReponse() {
@@ -18,11 +15,5 @@ async function computeReponse() {
   
   return {
     text: rows[0].content as string,
-  }
-}
-
-function computeFakeResponse() {
-  return {
-    text: "Bonjour comment allez-vous ce matin?"
   }
 }
