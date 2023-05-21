@@ -8,7 +8,7 @@ const db = createKysely<Database>();
 
 export default defineEventHandler(async () => {
   return match(process.env.NODE_ENV)
-    .with('production', () => computeReponse())
+    .with('development', () => computeReponse())
     .otherwise(() => computeFakeResponse())
 })
 
@@ -23,6 +23,6 @@ async function computeReponse() {
 
 function computeFakeResponse() {
   return {
-    text: "Bonjour comment allez-vous ce matin?"
+    text: "A game that allows you to train your strike speed"
   }
 }

@@ -107,11 +107,27 @@ export default {
         this.started = true;
         this.startingTime = new Date();
       }
+      
       if (this.finished) {
         return;
       }
 
       if (!this.currentWord.includes($e.target.value.trim())) {
+        if (this.text.includes(this.writtenText) && this.writtenText.includes(' ')) {
+          const wordCount = this.writtenText.split(' ').length;
+          this.invalidWrittenText = ""
+          this.validWrittenText = ""
+          this.currentWord = this.text.replace(this.writtenText, "").split(' ').at(0)!
+          this.writtenText = ""
+          this.wordIndexPassed += wordCount;
+
+          const percentage = Math.floor((this.previousText.length + this.currentWordTypedPart.length)/ this.text.length * 100);
+          this.progressionPercentage = percentage;
+          document.getElementById('bar')!.style.width = percentage + "%";
+
+          return
+        }        
+
         this.invalidWrittenText = this.invalidWrittenText + $e.target.value.slice(-1)
         return
       }
