@@ -21,13 +21,13 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@vercel/postgres-kysely": "0.3.0",
-    "kysely": "0.24.2",
-    "ts-pattern": "4.3.0"
+    "@vercel/postgres-kysely": "0.10.0",
+    "kysely": "0.28.11",
+    "ts-pattern": "5.9.0"
   },
   "devDependencies": {
-    "@nuxtjs/tailwindcss": "6.7.0",
-    "@types/node": "20",
-    "nuxt": "3.5.0"
+    "@nuxtjs/tailwindcss": "6.14.0",
+    "@types/node": "25",
+    "nuxt": "4.3.1"
   }
 }
