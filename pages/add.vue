@@ -1,78 +1,105 @@
 <template>
-  <div class="flex items-center justify-center w-screen h-screen bg-white">
-    <div class="container px-4 mx-auto my-4 lg:px-20">
-      <div class="w-full p-8 my-4 mr-auto shadow-2xl md:px-12 lg:w-9/12 lg:pl-20 lg:pr-40 rounded-2xl">
-        <div class="flex">
-          <h1 class="text-3xl font-bold uppercase">Add a new text</h1>
-        </div>
-        <div class="grid grid-cols-1 gap-5 mt-5 md:grid-cols-2">
+  <div class="mx-auto max-w-2xl">
+    <h1 class="mb-6 text-2xl font-semibold text-surface-900">Add a new text</h1>
+
+    <div
+      class="rounded-2xl border border-surface-200 bg-white p-6 shadow-card sm:p-8"
+    >
+      <div class="grid gap-5 sm:grid-cols-2">
+        <div>
+          <label
+            for="language"
+            class="mb-1.5 block text-sm font-medium text-surface-700"
+          >
+            Language
+          </label>
           <select
+            id="language"
             v-model="form.language"
-            class="w-full p-3 mt-2 text-gray-900 bg-gray-100 rounded-lg focus:outline-none focus:shadow-outline"
+            class="w-full rounded-xl border border-surface-200 bg-surface-50 px-4 py-3 text-surface-800 focus:border-track-500 focus:outline-none focus:ring-2 focus:ring-track-400/30"
           >
             <option value="EN">EN</option>
             <option value="FR">FR</option>
           </select>
-          <select
-            v-model="form.complexity"
-            class="w-full p-3 mt-2 text-gray-900 bg-gray-100 rounded-lg focus:outline-none focus:shadow-outline"
+        </div>
+        <div>
+          <label
+            for="complexity"
+            class="mb-1.5 block text-sm font-medium text-surface-700"
           >
-            <option value="MEDIUM">MEDIUM</option>
-            <option value="SMALL">SMALL</option>
-            <option value="HIGH">HIGH</option>
+            Complexity
+          </label>
+          <select
+            id="complexity"
+            v-model="form.complexity"
+            class="w-full rounded-xl border border-surface-200 bg-surface-50 px-4 py-3 text-surface-800 focus:border-track-500 focus:outline-none focus:ring-2 focus:ring-track-400/30"
+          >
+            <option value="MEDIUM">Medium</option>
+            <option value="SMALL">Small</option>
+            <option value="HIGH">High</option>
           </select>
-          </div>
-          <div class="my-4">
-            <textarea 
-              placeholder="Text"
-              class="w-full h-32 p-3 mt-2 text-gray-900 bg-gray-100 rounded-lg focus:outline-none focus:shadow-outline"
-              v-model="form.text"
-            ></textarea>
-          </div>
-          <div class="w-1/2 my-2 lg:w-1/4">
-            <button 
-              @click="submitText"
-              class="w-full p-3 text-sm font-bold tracking-wide text-gray-100 uppercase bg-blue-900 rounded-lg focus:outline-none focus:shadow-outline"
-            >
-              Submit
-            </button>
-          </div>
         </div>
       </div>
+
+      <div class="mt-5">
+        <label
+          for="text"
+          class="mb-1.5 block text-sm font-medium text-surface-700"
+        >
+          Text
+        </label>
+        <textarea
+          id="text"
+          v-model="form.text"
+          placeholder="Paste or type the text to add…"
+          rows="6"
+          class="w-full resize-y rounded-xl border border-surface-200 bg-surface-50 px-4 py-3 font-mono text-sm text-surface-800 placeholder:text-surface-400 focus:border-track-500 focus:outline-none focus:ring-2 focus:ring-track-400/30"
+        />
+      </div>
+
+      <div class="mt-6">
+        <button
+          type="button"
+          class="rounded-xl bg-track-600 px-6 py-3 font-medium text-white transition-colors hover:bg-track-700 focus:outline-none focus:ring-2 focus:ring-track-500 focus:ring-offset-2"
+          @click="submitText"
+        >
+          Submit
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-
-
 export default {
   data() {
     return {
       form: {
-        complexity: 'MEDIUM',
-        language: 'EN',
-        text: ''
-      }
-    }
+        complexity: "MEDIUM",
+        language: "EN",
+        text: "",
+      },
+    };
   },
   mounted() {
-    if (!localStorage.getItem('typing-racing-authorization')) {
-      const password = prompt('Password?');
+    if (!localStorage.getItem("typing-racing-authorization")) {
+      const password = prompt("Password?");
       if (password) {
-        localStorage.setItem('typing-racing-authorization', password)
+        localStorage.setItem("typing-racing-authorization", password);
       }
     }
   },
   methods: {
     submitText() {
-      $fetch('/api/texts/insert', {
-        method: 'POST',
+      $fetch("/api/texts/insert", {
+        method: "POST",
         headers: {
-          authorization: localStorage.getItem('typing-racing-authorization') ?? "_"
+          authorization:
+            localStorage.getItem("typing-racing-authorization") ?? "_",
         },
-        body: { ...this.form }
-      })
-    }
-  }
-}
+        body: { ...this.form },
+      });
+    },
+  },
+};
 </script>

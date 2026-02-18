@@ -1,39 +1,66 @@
 <template>
-  <div class="flex flex-col items-center mx-32">
+  <div class="mx-auto flex max-w-3xl flex-col items-center">
     <div
       v-if="text.length > 0"
-      class="w-full p-4 my-16 text-2xl rounded-lg xl:w-2/3 bg-blue-50"
+      class="w-full rounded-2xl border border-surface-200 bg-white p-6 shadow-card sm:p-8"
     >
-      <span class="text-green-500">
-        {{ previousText }}
-      </span>
-      <span class="underline">
-        <span class="m-0 text-green-500">{{ currentWordTypedPart }}</span>{{ currentWord.replace(currentWordTypedPart, "") }}
-      </span>
-      {{ followingText }} 
+      <p class="font-mono text-lg leading-relaxed text-surface-700 sm:text-xl">
+        <span class="text-track-600">{{ previousText }}</span>
+        <span class="relative">
+          <span class="text-track-600">{{ currentWordTypedPart }}</span>
+          <span
+            class="border-b-2 border-track-500 bg-track-50/50"
+            :class="{
+              'border-red-400 bg-red-50/50': invalidWrittenText !== '',
+            }"
+          >
+            {{ currentWord.replace(currentWordTypedPart, "") }}
+          </span>
+        </span>
+        {{ followingText }}
+      </p>
     </div>
 
     <div
       v-else
-      class="w-full p-4 my-16 text-2xl italic rounded-lg xl:w-2/3 bg-blue-50"
+      class="flex w-full items-center justify-center rounded-2xl border border-surface-200 bg-surface-50/50 py-16"
     >
-      Text is loading ...
+      <span class="font-mono text-surface-500">Loading text…</span>
     </div>
 
-    <div v-if="text.length > 0" class="flex flex-col items-center justify-center w-full">
+    <div v-if="text.length > 0" class="mt-8 w-full max-w-2xl">
       <input
-        @keyup="keyTyped"
         v-model="writtenText"
-        class="p-2 text-xl xl:w-1/2 w-full border-4 rounded-md !outline-none"
-        :class="{
-          'border-red-600 border-4': invalidWrittenText !== ''
-        }"
+        type="text"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+        spellcheck="false"
+        class="font-mono w-full rounded-xl border-2 bg-white px-4 py-3 text-lg text-surface-800 shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-track-400/50 sm:text-xl"
+        :class="
+          invalidWrittenText !== ''
+            ? 'border-red-400 focus:border-red-400 focus:ring-red-400/50'
+            : 'border-surface-200 focus:border-track-500'
+        "
+        placeholder="Start typing here…"
+        @keyup="keyTyped"
       />
 
-      <div class="relative w-full h-6 mt-4 overflow-hidden rounded-full xl:w-1/2">
-        <div class="absolute w-full h-full bg-gray-200"></div>
-        <div id="bar" class="relative w-0 h-full bg-green-500"></div>
-        <div class="absolute top-0 left-0 z-50 flex justify-center w-full mx-auto font-bold">{{ progressionPercentage }}%</div>
+      <div class="mt-4 flex items-center gap-3">
+        <div
+          class="relative h-3 flex-1 overflow-hidden rounded-full bg-surface-200"
+        >
+          <div
+            id="bar"
+            class="h-full rounded-full bg-track-500 transition-all duration-300 ease-out"
+            style="width: 0%"
+          />
+        </div>
+        <span
+          class="min-w-[3rem] text-right font-mono text-sm font-medium text-surface-600"
+        >
+          {{ progressionPercentage }}%
+        </span>
       </div>
     </div>
   </div>
@@ -50,7 +77,7 @@ type State = {
   finished: boolean;
   started: boolean;
   progressionPercentage: number;
-}
+};
 
 export default {
   data(): State {
@@ -64,91 +91,87 @@ export default {
       finished: false,
       started: false,
       progressionPercentage: 0,
-    }
+    };
   },
   computed: {
     previousText() {
-      if (this.text.length === 0) {
-        return ""
-      }
-      
-      return this.text.split(' ').slice(0, this.wordIndexPassed).join(' ') + " ";
+      if (this.text.length === 0) return "";
+      return (
+        this.text.split(" ").slice(0, this.wordIndexPassed).join(" ") + " "
+      );
     },
     currentWordTypedPart() {
       return this.validWrittenText;
     },
-    currentWordStayingPart() {
-      return this.currentWord.replace(this.currentWordTypedPart, "");
-    },
     currentWord() {
-      return this.text.split(' ')[this.wordIndexPassed];
+      return this.text.split(" ")[this.wordIndexPassed];
     },
     followingText() {
-      if (this.text.length === 0) {
-        return ""
-      }
-      
-      return this.text.replace(this.previousText, '').replace(this.currentWord, '');
-    },
-    followingWord() {
-      if (this.text.length === 0) {
-        return ""
-      }
-      
-      return this.text.replace(this.currentWord, '');
+      if (this.text.length === 0) return "";
+      return this.text
+        .replace(this.previousText, "")
+        .replace(this.currentWord, "");
     },
   },
   mounted() {
     this.fetchText();
   },
   methods: {
-    keyTyped($e) {
+    keyTyped($e: KeyboardEvent & { target: HTMLInputElement }) {
       if (!this.started) {
         this.started = true;
         this.startingTime = new Date();
       }
-      if (this.finished) {
+      if (this.finished) return;
+
+      if (!this.currentWord?.includes($e.target.value.trim())) {
+        this.invalidWrittenText =
+          this.invalidWrittenText + $e.target.value.slice(-1);
         return;
       }
 
-      if (!this.currentWord.includes($e.target.value.trim())) {
-        this.invalidWrittenText = this.invalidWrittenText + $e.target.value.slice(-1)
-        return
-      }
-   
-      this.invalidWrittenText = ""
-      this.validWrittenText = this.writtenText
+      this.invalidWrittenText = "";
+      this.validWrittenText = this.writtenText;
 
-      const percentage = Math.floor((this.previousText.length + this.currentWordTypedPart.length)/ this.text.length * 100);
+      const percentage = Math.floor(
+        ((this.previousText.length + this.currentWordTypedPart.length) /
+          this.text.length) *
+          100,
+      );
       this.progressionPercentage = percentage;
-      document.getElementById('bar')!.style.width = percentage + "%";
+      const bar = document.getElementById("bar");
+      if (bar) bar.style.width = percentage + "%";
 
       if (`${this.currentWord} ` === $e.target.value) {
         this.wordIndexPassed++;
-
-        this.writtenText = ""
-        this.validWrittenText = ""
+        this.writtenText = "";
+        this.validWrittenText = "";
       } else if (this.previousText + this.validWrittenText === this.text) {
-        const duration = Math.floor(new Date().getTime() / 1000 - this.startingTime.getTime() / 1000);
-        this.finished = true
+        const duration = Math.floor(
+          new Date().getTime() / 1000 - this.startingTime.getTime() / 1000,
+        );
+        this.finished = true;
         window.setTimeout(() => {
-          const wpm = Math.floor(this.text.split(' ').length / (duration / 60))
-          let nickname = prompt(`Finished in ${duration} seconds (${wpm} wpm)! GG! What is you name?`)
-          while(nickname == null || nickname.length === 0) {
-            nickname = prompt(`Finished in ${duration} seconds (${wpm} wpm)! GG! What is you name?`)
+          const wpm = Math.floor(this.text.split(" ").length / (duration / 60));
+          let nickname = prompt(
+            `Finished in ${duration} seconds (${wpm} wpm)! GG! What is your name?`,
+          );
+          while (nickname == null || nickname.length === 0) {
+            nickname = prompt(
+              `Finished in ${duration} seconds (${wpm} wpm)! GG! What is your name?`,
+            );
           }
-
-          $fetch('/api/rankings/new', {
+          $fetch("/api/rankings/new", {
             method: "POST",
-            body: { nickname, score_wpm: wpm }
-          })
-        }, 1)
+            body: { nickname, score_wpm: wpm },
+          });
+        }, 1);
       }
     },
     async fetchText() {
-      const data = await $fetch('/api/texts/random')
-      this.text = data.text
-    }
-  }
-}
+      const data = await $fetch<{ text: string }>("/api/texts/random");
+      this.text = data.text;
+    },
+  },
+};
 </script>

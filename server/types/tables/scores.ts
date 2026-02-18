@@ -3,4 +3,4 @@ export type ScoresTable = {
   id: string;
   nickname: string;
   score_wpm: number;
-}
+};
